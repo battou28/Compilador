@@ -5,6 +5,7 @@
 
 %class Scanner
 %unicode
+%ignorecase
 /*%debug*/
 %line
 %column

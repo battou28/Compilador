@@ -7,12 +7,11 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
 
-///////////////////////////////////////////////////////////////////////// NutPad
 public class Compi extends JFrame {
-    //... Components 
     File f=null;
     int cont=0;
-    public JTextArea    _editArea;
+    public  JTextArea    _editArea;
+    public JTextArea    _editAreaE;
     private JLabel       _Row;
     private JLabel       _Column;
     private JFileChooser _fileChooser = new JFileChooser();
@@ -21,18 +20,13 @@ public class Compi extends JFrame {
     private Action _saveAction = new SaveAction();
     private Action _exitAction = new ExitAction(); 
     
-   private CaretListener  cListener = new CaretListener() {
-        
+    private CaretListener  cListener = new CaretListener() {
         
         @Override
-        public void caretUpdate(CaretEvent e) {
-                
-            _Row.setText( "ROW: " + String.valueOf(getRowAndColumn()[0]));
-            _Column.setText("COLUMN: " +String.valueOf(getRowAndColumn()[1]));
-            
-            //throw new UnsupportedOperationException("Not supported yet.");
-        }
-        
+        public void caretUpdate(CaretEvent e) {       
+            _Row.setText( "Fila: " + String.valueOf(getRowAndColumn()[0]));
+            _Column.setText("Columna: " +String.valueOf(getRowAndColumn()[1]));   
+        }  
     };
     
     //===================================================================== main
@@ -43,58 +37,86 @@ public class Compi extends JFrame {
     
     //============================================================== constructor
     public Compi() {
-        
-        //... Create scrollable text area.
-        _editArea = new JTextArea(15, 80);
-        //_editArea.getText();
+        _editArea = new JTextArea(1, 1);
         _editArea.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
         _editArea.setFont(new Font("monospaced", Font.PLAIN, 14));
         JScrollPane scrollingText = new JScrollPane(_editArea);
-         _editArea.addCaretListener(cListener);
-        
+        _editArea.addCaretListener(cListener);
+         
+        _editAreaE = new JTextArea(1, 50);
+        _editAreaE.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+        _editAreaE.setFont(new Font("monospaced", Font.PLAIN, 14));
+        JScrollPane scrollingTextE = new JScrollPane(_editAreaE);
+        _editAreaE.addCaretListener(cListener);
+
         //Labels de Row y Column
-        _Row = new JLabel("ROW: " + String.valueOf(getRowAndColumn()[0]));
-        _Column = new JLabel("COLUMN: " + String.valueOf(getRowAndColumn()[1]));
+        _Row = new JLabel("Fila: " + String.valueOf(getRowAndColumn()[0]));
+        _Column = new JLabel("Columna: " + String.valueOf(getRowAndColumn()[1]));
         
         
-        //-- Create a content pane, set layout, add component.
+        
+        final JFrame vtn = new JFrame();
+        vtn.setTitle("Compilador");
+        vtn.setSize(1100,600);
+        vtn.setDefaultCloseOperation(EXIT_ON_CLOSE);
+         
         JPanel content = new JPanel();
         content.setLayout(new BorderLayout());
-        content.add(scrollingText, BorderLayout.CENTER);
-        content.add(_Row,BorderLayout.SOUTH);
-        content.add(_Column,BorderLayout.EAST);
-        
-        
+        content.add(scrollingText);
+        vtn.add(content);
+
+        JPanel content2 = new JPanel();
+        content2.setLayout(new BorderLayout());
+        content2.add(scrollingTextE);
+        vtn.add(content2,BorderLayout.EAST);
+         
+        JPanel content1 = new JPanel();
+        content1.add(_Row);
+        content1.add(_Column);
+        vtn.add(content1,BorderLayout.SOUTH);
+
         //... Create menubar
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = menuBar.add(new JMenu("Archivo"));
         fileMenu.setMnemonic('F');
-        fileMenu.add(_openAction);       // Note use of actions, not text.
+        JMenuItem nuevo = new JMenuItem( "Nuevo" );
+        fileMenu.add(nuevo);
+        nuevo.addActionListener(
+         new ActionListener() {
+            public void actionPerformed( ActionEvent evento )
+            {
+                _editArea.setText("");
+                _editAreaE.setText("");
+                cont=0;
+                f=null;
+            }
+         }
+        );
+        fileMenu.add(_openAction);
         fileMenu.add(_saveAction);
         fileMenu.addSeparator(); 
         fileMenu.add(_exitAction);
+        
         JMenu fileMenu1 = menuBar.add(new JMenu("Compilar"));
         JMenuItem scanner = new JMenuItem( "Scanner" );
         fileMenu1.add(scanner);
         scanner.addActionListener(
- 
-         new ActionListener() {  // clase interna anónima
- 
-            // mostrar cuadro de diálogo de mensaje cuando el usuario seleccione Acerca de...
+         new ActionListener() {
             public void actionPerformed( ActionEvent evento )
             {
                 if(cont==0){
-                int retval = _fileChooser.showSaveDialog(Compi.this);
-                if (retval == JFileChooser.APPROVE_OPTION) {
-                    f = _fileChooser.getSelectedFile();
-                    try {
-                        FileWriter writer = new FileWriter(f);
-                        _editArea.write(writer);  // Use TextComponent write
-                    } catch (IOException ioex) {
-                        JOptionPane.showMessageDialog(Compi.this, ioex);
-                        System.exit(1);
+                    int retval = _fileChooser.showSaveDialog(Compi.this);
+                    if (retval == JFileChooser.APPROVE_OPTION) {
+                        f = _fileChooser.getSelectedFile();
+                        try {
+                            FileWriter writer = new FileWriter(f);
+                            _editArea.write(writer);  // Use TextComponent write
+                        } catch (IOException ioex) {
+                            JOptionPane.showMessageDialog(Compi.this, ioex);
+                            System.exit(1);
+                        }
                     }
-                }}
+                }
                 try {
                         FileWriter writer = new FileWriter(f);
                         _editArea.write(writer);  // Use TextComponent write
@@ -103,39 +125,43 @@ public class Compi extends JFrame {
                         System.exit(1);
                     }
                 reconocedor_tokens.tokens(f);
+                int posc=1;
+                _editAreaE.setText(Scanner.token.get(0).toString());
+                    while(posc<Scanner.token.size()){
+                        //_editAreaE. setText(Scanner.error.get(pos).toString());
+                         _editAreaE.append(Scanner.token.get(posc).toString());
+                        posc++;
+                    }
+                Scanner.token.clear();
+                if(Scanner.error.size()>0){
+                    int pos=0;
+                    _editAreaE.append("----------------------------------------------------------------------------\n");
+                    //_editAreaE.append(Scanner.error.get(0).toString());
+                    while(pos<Scanner.error.size()){
+                        //_editAreaE. setText(Scanner.error.get(pos).toString());
+                         _editAreaE.append(Scanner.error.get(pos).toString());
+                        pos++;
+                    }   
+                    Scanner.error.clear();        
+                }
+                _editAreaE.append("----------------------------------------------------------------------------\n");
+                _editAreaE.append("Scanner Completo.");
+                //else{_editAreaE.setText("Scanner Completo.");}
             }
- 
-         }  // fin de la clase interna anónima
- 
+         }
       );
-        
-        //... Set window content and menu.
-        setContentPane(content);
-        setJMenuBar(menuBar);
-        
-        //... Set other window characteristics.
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setTitle("NutPad");
-        pack();
-        setLocationRelativeTo(null);
-        setVisible(true);
-        
-          
+        //setJMenuBar(menuBar);
+        vtn.add(menuBar,BorderLayout.NORTH);
+        vtn.setVisible(true);
+        //pack();  
     }
+
     
-    
-   
-    
-    
-    
-  //File f;  
-    
-    ////////////////////////////////////////////////// inner class OpenAction
     class OpenAction extends AbstractAction {
         //============================================= constructor
         public OpenAction() {
-            super("Open...");
-            putValue(MNEMONIC_KEY, new Integer('O'));
+            super("Abrir");
+            //putValue(MNEMONIC_KEY, new Integer('A'));
         }
         
         //========================================= actionPerformed
@@ -148,30 +174,7 @@ public class Compi extends JFrame {
                     FileReader reader = new FileReader(f);
                     _editArea.read(reader, "");  // Use TextComponent read
                 } catch (IOException ioex) {
-                    System.out.println(e);
-                    System.exit(1);
-                }
-            }
-        }
-    }
-    
-    //////////////////////////////////////////////////// inner class SaveAction
-    class SaveAction extends AbstractAction {
-        //============================================= constructor
-        SaveAction() {
-            super("Save...");
-            putValue(MNEMONIC_KEY, new Integer('S'));
-        }
-        
-        //========================================= actionPerformed
-        public void actionPerformed(ActionEvent e) {
-            int retval = _fileChooser.showSaveDialog(Compi.this);
-            if (retval == JFileChooser.APPROVE_OPTION) {
-                File f = _fileChooser.getSelectedFile();
-                try {
-                    FileWriter writer = new FileWriter(f);
-                    _editArea.write(writer);  // Use TextComponent write
-                } catch (IOException ioex) {
+                    //System.out.println(e);
                     JOptionPane.showMessageDialog(Compi.this, ioex);
                     System.exit(1);
                 }
@@ -179,13 +182,35 @@ public class Compi extends JFrame {
         }
     }
     
-    ///////////////////////////////////////////////////// inner class ExitAction
-    class ExitAction extends AbstractAction {
+    class SaveAction extends AbstractAction {
+        //============================================= constructor
+        SaveAction() {
+            super("Guardar");
+            //putValue(MNEMONIC_KEY, new Integer('G'));
+        }
         
+        //========================================= actionPerformed
+        public void actionPerformed(ActionEvent e) {
+            int retval = _fileChooser.showSaveDialog(Compi.this);
+            if (retval == JFileChooser.APPROVE_OPTION) {
+                f = _fileChooser.getSelectedFile();
+                try {
+                    FileWriter writer = new FileWriter(f);
+                    _editArea.write(writer);  // Use TextComponent write
+                } catch (IOException ioex) {
+                    JOptionPane.showMessageDialog(Compi.this, ioex);
+                    System.exit(1);
+                }
+                cont=1;
+            }
+        }
+    }
+
+    class ExitAction extends AbstractAction {
         //============================================= constructor
         public ExitAction() {
-            super("Exit");
-            putValue(MNEMONIC_KEY, new Integer('X'));
+            super("Salir");
+            putValue(MNEMONIC_KEY, new Integer('S'));
         }
         
         //========================================= actionPerformed
@@ -193,6 +218,7 @@ public class Compi extends JFrame {
             System.exit(0);
         }
     }
+    
     public int[] getRowAndColumn(){
         int caretpos =0;
         int[] posicion = new int[2];
