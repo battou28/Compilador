@@ -1,0 +1,10 @@
+/*Jonnathan Bartly 201132726*/
+public class nueva(){
+	Syste. out.println()
+
+}
+
+int _x= 19;
+/*/*x= 1.3;*/x*/
+String $x= "hola"
+
