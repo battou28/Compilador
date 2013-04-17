@@ -1,0 +1,689 @@
+	package nuevo_compilador;
+import java_cup.runtime.*;
+
+import java.util.ArrayList;
+
+parser code {:
+        
+        public static  ArrayList error_parser=new ArrayList();
+        public static  ArrayList regla=new ArrayList();
+
+	Scanner scanner;
+
+	AST raiz;
+
+	public parser(java.io.Reader input){
+	scanner = new Scanner(input);
+	}
+
+	public String errores(int sys)
+	{
+		if (sys == 2)
+			return("_import");
+		else if (sys == 3)
+			return("_punto");
+		else if (sys == 4)
+			return("_asterisco");
+		else if (sys == 5)
+			return("_puntoycoma");
+		else if (sys == 6)
+			return("_id");
+		else if (sys == 7)
+			return("_class");
+		else if (sys == 8)
+			return("_public");
+		else if (sys == 9)
+			return("_static");
+		else if (sys == 10)
+			return("_void");
+		else if (sys == 11)
+			return("_main");
+		else if (sys == 12)
+			return("_TString");
+		else if (sys == 13)
+			return("_cuadradoizq");
+		else if (sys == 14)
+			return("_cuadradoder");
+		else if (sys == 15)
+			return("_redondoizq");
+		else if (sys == 16)
+			return("_redondoder");
+		else if (sys == 17)
+			return("_corcheteizq");
+		else if (sys == 18)
+			return("_corcheteder");
+		else if (sys == 19)
+			return("_extends");
+		else if (sys == 20)
+			return("_implements");
+		else if (sys == 21)
+			return("_return");
+		else if (sys == 22)
+			return("_coma");
+		else if (sys == 23)
+			return("_boolean");
+		else if (sys == 24)
+			return("_if");
+		else if (sys == 25)
+			return("_else");
+		else if (sys == 26)
+			return("_while");
+		else if (sys == 27)
+			return("_System");
+		else if (sys == 28)
+			return("_out");	
+		else if (sys == 29)
+			return("_println");
+		else if (sys == 30)
+			return("_exit");
+		else if (sys == 31)
+			return("_TInt");
+		else if (sys == 32)
+			return("_igual");
+		else if (sys == 33)
+			return("_in");
+		else if (sys == 34)
+			return("_numero");
+		else if (sys == 35)
+			return("_read");
+		else if (sys == 36)
+			return("_this");
+		else if (sys == 37)
+			return("_length");
+		else if (sys == 38)
+			return("_true");
+		else if (sys == 39)
+			return("_false");
+		else if (sys == 40)
+			return("_new");
+		else if (sys == 41)
+			return("_negacion");
+		else if (sys == 42)
+			return("_String");
+		else if (sys == 43)
+			return("_suma");
+		else if (sys == 44)
+			return("_resta");
+		else if (sys == 45)
+			return("_division");
+		else if (sys == 46)
+			return("_diferentea");
+		else if (sys == 47)
+			return("_iguala");
+		else if (sys == 48)
+			return("_menorque");
+		else if (sys == 49)
+			return("_menorigual");
+		else if (sys == 50)
+			return("_mayorigual");
+		else if (sys == 51)
+			return("_mayorque");
+		else if (sys == 52)
+			return("_or");
+		else if (sys == 53)
+			return("_and");
+		else if (sys == 54)
+			return("_puntoasterisco");
+		else 
+			return("error");
+	}
+
+	public void syntax_error(Symbol cur_token2)
+	{
+                if (cur_token.sym == 2)
+                        report_error("No se esperaba una Palabra Reservada", cur_token2);
+		else if (cur_token.sym == 3)
+			report_error("No se esperaba un Punto", cur_token2);
+		else if (cur_token.sym == 4)
+			report_error("No se esperaba un Asterisco", cur_token2);
+		else if (cur_token.sym == 5)
+			report_error("No se esperaba un Punto y coma", cur_token2);
+		else if (cur_token.sym == 6)
+			report_error("No se esperaba un ID", cur_token2);
+		else if (cur_token.sym == 7)
+			report_error("No se esperaba una Palabra Reservada", cur_token2);
+		else if (cur_token.sym == 8)
+			report_error("No se esperaba una Palabra Reservada", cur_token2);
+		else if (cur_token.sym == 9)
+			report_error("No se esperaba una Palabra Reservada", cur_token2);
+		else if (cur_token.sym == 10)
+			report_error("No se esperaba una Palabra Reservada", cur_token2);
+		else if (cur_token.sym == 11)
+			report_error("No se esperaba una Palabra Reservada", cur_token2);
+		else if (cur_token.sym == 12)
+			report_error("No se esperaba un Tipo String", cur_token2);
+		else if (cur_token.sym == 13)
+			report_error("No se esperaba un Parentesis Abierto", cur_token2);
+		else if (cur_token.sym == 14)
+			report_error("No se esparaba un Parentesis Cerrado", cur_token2);
+		else if (cur_token.sym == 15)
+			report_error("No se esperaba un Parentesis Abierto", cur_token2);
+		else if (cur_token.sym == 16)
+			report_error("No se esperaba un Parentesis Cerrado", cur_token2);
+		else if (cur_token.sym == 17)
+			report_error("No se esperaba un Parentesis Abierto", cur_token2);
+		else if (cur_token.sym == 18)
+			report_error("No se esperaba un Parentesis Cerrado", cur_token2);
+		else if (cur_token.sym == 19)
+			report_error("No se esperaba una Palabra Reservada", cur_token2);
+		else if (cur_token.sym == 20)
+			report_error("No se esperaba una Palabra Reservada", cur_token2);
+		else if (cur_token.sym == 21)
+			report_error("No se esperaba un Return", cur_token2);
+		else if (cur_token.sym == 22)
+			report_error("No se esparaba una Coma", cur_token2);
+		else if (cur_token.sym == 23)
+			report_error("No se esperaba un Boolean", cur_token2);
+		else if (cur_token.sym == 24)
+			report_error("No se esperaba un IF", cur_token2);
+		else if (cur_token.sym == 25)
+			report_error("No se esperaba un ELSE", cur_token2);
+		else if (cur_token.sym == 26)
+			report_error("No se esperaba un WHILE", cur_token2);
+		else if (cur_token.sym == 27)
+			report_error("No se esperaba una Palabra Reservada", cur_token2);
+		else if (cur_token.sym == 28)
+			report_error("No se esperaba una Palabra Reservada", cur_token2);
+		else if (cur_token.sym == 29)
+			report_error("No se esperaba una Palabra Reservada", cur_token2);
+		else if (cur_token.sym == 30)
+			report_error("No se esperaba una Palabra Reservada", cur_token2);
+		else if (cur_token.sym == 31)
+			report_error("No se esperaba un Tipo Entero", cur_token2);
+		else if (cur_token.sym == 32)
+			report_error("No se esperaba un Igual", cur_token2);
+		else if (cur_token.sym == 33)
+			report_error("No se esperaba una Palabra Reservada", cur_token2);
+		else if (cur_token.sym == 34)
+			report_error("No se esperaba un Numero", cur_token2);
+		else if (cur_token.sym == 35)
+			report_error("No se esparaba una Palabra Reservada", cur_token2);
+		else if (cur_token.sym == 36)
+			report_error("No se esperaba una Palabra Reservada", cur_token2);
+		else if (cur_token.sym == 37)
+			report_error("No se esperaba una Palabra Reservada", cur_token2);
+		else if (cur_token.sym == 38)
+			report_error("No se esperaba un TRUE", cur_token2);
+		else if (cur_token.sym == 39)
+			report_error("No se esperaba un FALSE", cur_token2);
+		else if (cur_token.sym == 40)
+			report_error("No se esperaba una Palabra Reservada", cur_token2);
+		else if (cur_token.sym == 41)
+			report_error("No se esparaba una Negacion", cur_token2);
+		else if (cur_token.sym == 42)
+			report_error("No se esperaba un STRING", cur_token2);
+		else if (cur_token.sym == 43)
+			report_error("No se esperaba una Suma", cur_token2);
+		else if (cur_token.sym == 44)
+			report_error("No se esperaba una Resta", cur_token2);
+		else if (cur_token.sym == 45)
+			report_error("No se esperaba una Division", cur_token2);
+		else if (cur_token.sym == 46)
+			report_error("No se esperaba un Diferente A", cur_token2);
+		else if (cur_token.sym == 47)
+			report_error("No se esperaba un Igual A", cur_token2);
+		else if (cur_token.sym == 48)
+			report_error("No se esperaba un Menor Que", cur_token2);
+		else if (cur_token.sym == 49)
+			report_error("No se esperaba un Menor Igual", cur_token2);
+		else if (cur_token.sym == 50)
+			report_error("No se esperaba un Mayor Igual", cur_token2);
+		else if (cur_token.sym == 51)
+			report_error("No se esperaba un Mayor Que", cur_token2);
+		else if (cur_token.sym == 52)
+			report_error("No se esperaba un OR", cur_token2);
+		else if (cur_token.sym == 53)
+			report_error("No se esperaba un AND", cur_token2);
+		else if (cur_token.sym == 54)
+			report_error("No se esperaba un Punto Asterisco", cur_token2);
+		else 
+			report_error("Error: ", cur_token2);
+	
+	}
+
+	public void report_error(String message, Object info) {
+	   StringBuffer m = new StringBuffer("Error ");
+	
+	   if (info instanceof java_cup.runtime.Symbol) {
+	     m.append( "(" + errores(cur_token.sym) +")" );
+	     m.append(" en fila "+ cur_token.left + " columna " + cur_token.right );
+	     
+	     if (((java_cup.runtime.Symbol)info).value != null)
+	       m.append(". Lexema: " + cur_token.value.toString());
+	     
+	   }
+	   m.append(" : "+message);
+	   m.append(" y en su lugar viene " + ((java_cup.runtime.Symbol)info).value.toString()+"\n");
+
+           error_parser.add(m);
+	   System.out.println(m);
+	}
+
+   
+	public void report_fatal_error(String message, Object info) 	{
+		report_error(message, info);
+		throw new RuntimeException("Error Fatal de Sintaxis!!!");
+  	}
+
+:}
+
+terminal _import, _punto,_asterisco, _puntoycoma;     
+terminal String _id;
+terminal _class, _public, _static, _void, _main, _TString,_cuadradoizq, _cuadradoder, _redondoizq, _redondoder, _corcheteizq, _corcheteder;
+terminal _extends, _implements, _return,  _coma,  _boolean, _if, _else, _while,_System, _out, _println, _exit,_TInt,  _igual,_in;
+terminal Integer _numero;
+terminal _read, _this, _length,_true, _false,_new,_negacion;
+terminal String _String;
+terminal _suma, _resta,_division,_diferentea, _iguala,_menorque, _menorigual, _mayorigual,_mayorque, _or, _and,_puntoasterisco;
+
+
+non terminal Program, ImportDecls, ImportDecl, ClassDecls, Statements, Statement;
+non terminal TypeName, TypeNames, MainClass, BodyDecl, VarDecls, VarDecl, ConstrDecl;
+non terminal MethodDecl, FormalLists, FormalList, /*Type,*/ Exp, Expr_Int, Exp_Simpl, ExpList, ExpLists, Op;
+non terminal ClassDecls2, ClassDeclaration,ClassEIDeclaration;
+non terminal otra, otra2;
+non terminal Tipos,ThisId,Exp_Demas,Cuad_Exp,ElseStatement,Return,IdVoid,BodyDecl_1,ImportDelc_1,ClassDecl_3,ClassDecl_2,ClassDecl_1,ClassDecl;
+
+precedence left _id;
+precedence left _menorque, _mayorque, _menorigual, _mayorigual, _diferentea, _iguala;
+precedence left _class,_else, _punto, _cuadradoizq;
+precedence left _or, _and;
+precedence left _suma, _resta;
+precedence left _asterisco, _division;
+
+
+
+
+start with Program;
+
+
+
+// Regla 1)
+Program ::=	ImportDecls:i ClassDecls:c MainClass:m
+	{:
+		parser.raiz = new ImpClssMnAST(i,c,m);
+	:}
+	;
+
+// Regla 2)
+ImportDecls ::=	 ImportDecl:d ImportDecls:s
+	{:
+		RESULT = new varImportAST(d,s);
+	:} 
+	| 
+	{:
+		RESULT = null;
+	:}
+	;
+
+ClassDecls::=  ClassDecl:cd ClassDecls:cds 
+	{:
+		RESULT = new varClassDeclsAST(cd,cds);
+	:}
+	;
+
+// Regla 3) 
+ClassDecl  ::= ClassDecl_1:cd1 _corcheteizq BodyDecl:bd _corcheteder
+	{:
+		RESULT = new BodyCD1AST(cd1,bd);
+	:}
+
+;
+
+
+ClassDecl_1 ::= _class _id ClassDecl_2:cd2
+	{:
+		RESUlT = new CD2AST(cd2);
+	:}
+	|
+	{:
+		RESULT = null;
+	:}
+	;
+
+ClassDecl_2 ::= ClassDecl_3:cd3 _id
+	{:
+		RESULT = new CD3AST(cd3);
+	:}
+;
+
+//Falta este de ponerle el RESULT!
+ClassDecl_3 ::= _extends	
+	| _implements
+	;
+
+
+// Regla 4)
+ImportDecl ::=	_import TypeName:tn ImportDelc_1:imp1 _puntoycoma
+	{:
+		RESULT = new impTypeAST(tn,imp1);		
+	:} 
+	;
+//A este le falta el RESULT!
+ImportDelc_1 ::=  _puntoasterisco
+        |
+        ;
+
+// Regla 5)
+TypeName ::=	_id TypeNames:tn
+	{:
+		RESULT = new varTypeNameAST(tn);
+	:}
+	;
+
+// Regla 6)
+TypeNames ::=	TypeNames:tns _punto _id 
+        {:
+		RESULT = new TNamesAST(tns);
+	:}
+	|
+	{:
+		RESULT = null;
+	:}
+	;
+
+// Regla 7)
+MainClass ::=	_class _id _corcheteizq _public _static _void _main _redondoizq _TString _cuadradoizq _cuadradoder _id _redondoder _corcheteizq Statement:s _corcheteder _corcheteder
+	{:
+		RESULT = new DefMainAST(s);
+	:}
+	;
+
+
+// Regla 9)
+BodyDecl ::=	 BodyDecl_1:bd1 BodyDecl:bd
+	{:
+		RESULT = new varBodyDeclAST(bd1,bd);
+	:} 
+	|
+	{:	
+		RESULT = null;
+	:}
+	;
+
+BodyDecl_1 ::= VarDecl:vd
+	{:
+		RESULT = new VariableDAST(vd);
+	:}
+        | ConstrDecl:cd
+	{:
+		RESULT = new ConstructorDAST(cd);
+	:} 
+        | MethodDecl:md 
+	{:
+		RESULT = new MethodDAST(md);
+	:}
+        | ClassDecl:cd
+	{:
+		RESULT = new ClassDAST(cd);
+	:}
+        ;
+
+//LE falta RESULT
+// Regla 10)
+VarDecl ::=	_id _id _puntoycoma
+	;
+
+// Regla 11)
+ConstrDecl ::=	_public _id _redondoizq FormalList:fl _redondoder _corcheteizq VarDecls:vd Statements:s _corcheteder
+	{:
+		RESULT = new DefConstrAST(fl,vd,s);
+	:}	
+	;
+
+// Regla 12)
+VarDecls ::=	VarDecl:vd VarDecls:vds
+	{:
+		RESULT = new varVarDEclsAST(vd,vds);
+	:}
+        |
+	{:
+		RESULT = null;   
+	:}
+	;
+
+// Regla 13)
+Statements ::=	Statement:s Statements:ss
+	{:
+		RESULT = new varStatementsAST(s,ss); 
+	:} 
+        |
+	{:   
+		RESULT = null;
+	:}
+	;
+
+// Regla 14)
+MethodDecl ::=	_public IdVoid:iv _id _redondoizq FormalList:fl _redondoder _corcheteizq VarDecls:vd Statements:s Return:s _corcheteder
+	{:
+		RESULT = new DefMethodDeclAST(iv,fl,vd,s,r); 
+	:} 	
+	;
+//Falta REsult!
+//esta regla habia Type en lugar de _id
+IdVoid ::=  _id 
+        | _void
+        ;
+
+Return ::=  _return Exp:e _puntoycoma
+	{:
+		RESULT = new DefReturn(e);
+	:}  
+        | 
+	{:
+		RESULT= null;
+        :}
+	;
+
+// Regla 15)
+//esta regla habia Type en lugar del primer _id
+FormalList ::=	_id _id FormalLists:fls
+	{:
+		RESULT = new varFormalListAST(fls);
+	:} 
+        |
+	{:
+		RESULT = null;
+	:}   
+	;
+
+// Regla 16)
+//esta regla habia Type en lugar del primer _id
+FormalLists ::=	 _coma _id _id FormalLists:fls
+	{:
+		RESULT = new varFomalListsAST(fls);
+	:} 
+        |  
+	{:
+		RESULT = null; 
+	:} 
+	;
+
+// Regla 17)
+//Type ::= //simpletype
+	//| arraytype       
+        //| 
+//	_id
+//	;
+	
+
+// Regla 18)
+Statement ::=	_corcheteizq Statements:s _corcheteder
+	{:
+		RESULT = new varStatAST(s);
+	:} 
+        | _if _redondoizq Exp:e _redondoder Statement:s ElseStatement:es
+	{:
+		RESULT = new ifelseStatAST(e,s,es);
+	:} 
+        | _while _redondoizq Exp:e _redondoder Statement:s
+	{:
+		RESULT = new whileStatAST(e,s);
+	:} 
+        | _System _punto _out _punto _println _redondoizq Exp:e _redondoder _puntoycoma
+	{:
+		RESULT = new printlnStatAST(e);
+	:} 
+        | _System _punto _exit _redondoizq _numero _redondoder _puntoycoma
+
+        | _id _igual Exp_Demas:ed _puntoycoma
+	{:
+		RESULT = new asigStatAST(ed);
+	:} 
+	| _id Cuad_Exp:ce _igual Exp_Demas:ed _puntoycoma
+	{:
+		RESULT = new ExpStatAST(ce,ed);
+	:} 
+        | ThisId:t _punto _id _redondoizq ExpList:el _redondoder
+	{:
+		RESULT = new ExplistStatAST(t,el);
+	:} 
+	;
+
+ElseStatement ::=  _else Statement:s
+	{:
+		RESULT = new elseStatAST(s);
+	:} 
+        |
+	{:
+		RESULT = null;
+	:} 
+        ;
+
+//otra::= _else;
+
+Cuad_Exp ::=  _cuadradoizq Exp:e _cuadradoder
+	{:
+		RESULT = new unaExpAST(e);
+	:}  
+        ;
+
+//esta regla habia Type en lugar de _id
+Exp_Demas ::=  Exp:e
+	{:
+		RESULT = new  solaExpAST(e);
+	:}  
+        | _redondoizq _id _redondoder _System _punto _in _punto _read _redondoizq _redondoder
+        ;
+
+ThisId ::=  _this 
+        | _id
+        ;
+
+
+// Regla 19)
+Exp ::=	Exp_Simpl:es Expr_Int:ei
+	{:
+		RESULT = new DefExpAST(es,ei);
+	:} 
+	;
+
+
+
+
+// Regla 20)
+Expr_Int ::=   Tipos:t Expr_Int:e
+	{:
+		RESULT = new tipExpAST(t,e);
+	:} 
+        | 
+	{:
+		RESULT = null; 
+	:}  
+	;
+
+Tipos ::=  Op:o Exp:e
+	{:
+		RESULT = new TipoOpAST(o,e);
+	:}  
+        | _cuadradoizq Exp:e _cuadradoder
+	{:
+		RESULT = new TipoCuadrAST(e);
+	:} 
+        | _punto _length 
+        | _punto _id _redondoizq ExpList:el _redondoder
+	{:
+		RESULT = new TipoListaAST(el);
+	:} 
+        ;
+
+// Regla 21)
+Exp_Simpl ::=	_numero
+        | _true
+        | _false
+        | _id
+        | _this
+        | _new _TInt _cuadradoizq Exp:e _cuadradoder
+	{:
+		RESULT = new ExpnewIntAST(e);
+	:} 
+        | _new _id _redondoizq ExpList:e _redondoder
+	{:
+		RESULT = new ExpnewidAST(e);
+	:} 
+        | _negacion Exp:e
+	{:
+		RESULT = new ExpnegAST(e);
+	:} 
+        | _redondoizq Exp:e _redondoder
+	{:
+		RESULT = new ExpredAST(e);
+	:} 
+        | _String
+	;
+
+// Regla 22)
+ExpList ::=	Exp:e ExpLists:l
+	{:
+		RESULT = ExplAST(e,l) 
+	:} 
+        | 
+	{:
+		RESULT = null;
+	:} 
+	;
+
+// Regla 23)
+ExpLists ::=	_coma Exp:e ExpLists:l
+	{:
+		RESULT = new varExpListsAST(e,l);
+	:} 
+        |  
+	{:
+		RESULT = null; 
+	:} 
+	;
+
+// Regla 24)
+Op ::=	_suma
+        | _resta
+        | _asterisco
+        | _division
+        | _diferentea
+        | _iguala
+        | _menorque
+        | _menorigual
+        | _mayorigual
+        | _mayorque
+        | _or
+        | _and
+	;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
